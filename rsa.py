@@ -1,5 +1,3 @@
-import math
-import random
 import sys
 
 # print(sys.getrecursionlimit())
@@ -14,49 +12,17 @@ q = 1165003694206624717505068596185439055550850333916922222510068863187095312489
 
 phi = (p - 1) * (q - 1)
 
-def createTestVals(k, N):
-    #This is simply a function I wrote to make a random array of k a values
-    testVals = []
-    for a in range(0, k):
-        val = random.randint(1, N-1)
-        testVals.append(val)
-    return testVals
-
 def mod_exp(x, y, N):
     #This is an implementation of modular exponentiation
     #Time complexity: O(n^3)
     #Space complexity: O(n^2)
     if y == 0:
         return 1
-    z = mod_exp(x, math.floor(y/2), N)
+    z = mod_exp(x, y // 2, N)
     if y % 2 == 0:
         return (z**2) % N
     else:
         return (x * z**2) % N
-
-def gcd(a, b):
-    if (b == 0):
-        return a
-    else:
-        return gcd(b, a % b)
-
-def miller_rabin(N,k):
-    #Time complexity: O(kn^4)
-    #Space complexity: O(n^2)
-    testVals = createTestVals(k, N)
-    #Miller rabin applies the modular exponentiation found in Fermat's theorem
-    for a in testVals:
-        n = N - 1
-        if mod_exp(a, n, N) != 1:
-            return 'composite'
-        #If the first check fails, it keeps on using modular exponentiation, taking the square root of the result each time, until the exponent becomes odd and that is no longer possible
-        while (n % 2 == 0):
-            if mod_exp(a, n, N) == N - 1:
-                break
-            elif mod_exp(a, n, N) != 1:
-                return 'composite'
-            n = n/2
-    return 'prime'
 
 # function inverse(a, n)
 #     t := 0;     newt := 1
@@ -76,7 +42,7 @@ def miller_rabin(N,k):
 
 # check if (e*d)%phi(n) == 1
 n = p * q
-print(n)
+print("n: ", n)
 def extended_euclid(e, n):
     d = 0
     new_d = 1
@@ -84,15 +50,10 @@ def extended_euclid(e, n):
     new_r = e
 
     while new_r != 0:
-        quotient = math.floor(r / new_r)
-        # temp_d = d
-        # temp_n_d = new_d
-        # temp_r = r
-        # temp_n_r = new_r
+        quotient = r // new_r
         (d, new_d) = (new_d, d - quotient * new_d)
         (r, new_r) = (new_r, r - quotient * new_r)
-        print(new_r)
-
+        # print(new_r)
     if (r > 1):
         return "e not invertible"
     if (d < 0):
@@ -102,13 +63,13 @@ def extended_euclid(e, n):
 
 d = extended_euclid(e, phi)
 
-print(d)
+print("d: ", d)
 
 m = 116683724595995812415204464800220046341847098708219974939871659063834910712369644695807211401823863407765494139162777372661207968602781295442240230046184096272458683361364027901361097924496220894827290343024413733260672139113765662110977531659380880716669505166695417691640702760225045741088003161711582312912
-
 encrypt = mod_exp(m, e, n)
 print("encrypt: ", encrypt)
+print("check encrypt: ", mod_exp(encrypt, d, n))
 
 k = 119346834962971636870341682219569368324396153456702106519669893696711847227603621791290911592241761305941133264962940829581442517222092941631635081611281860159486239020012071566088932989287938933614380850476199462094260964822793622599424036135714419162688662404188856320434907489999719968549846074275574183085
 decrypt = mod_exp(k, d, n)
-print("decryp: ", decrypt)
+print("decrypt: ", decrypt)
